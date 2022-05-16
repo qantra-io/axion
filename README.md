@@ -14,5 +14,4 @@ $ npm install
 # Starting service
 $ node app.js / nodemon
 
-``` 
-....
+```
