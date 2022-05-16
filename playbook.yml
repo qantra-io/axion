@@ -1,6 +1,6 @@
 --- # 
 - gather_facts: no
-  hosts: 165.227.174.1
+  hosts: webservers
   tasks:
     - name: update
       shell: mkdir /reports/ && cd /code/threat-network-revamped/ && npm install -g eslint && eslint --no-color --format json --output-file /reports/ ./
