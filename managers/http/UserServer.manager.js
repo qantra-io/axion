@@ -1,10 +1,7 @@
 const http              = require('http');
 const express           = require('express');
 const cors              = require('cors');
-const useragent         = require('useragent');
-const requestIp         = require('request-ip');
 const app               = express();
-
 
 module.exports = class UserServer {
     constructor({config, managers}){
@@ -24,16 +21,6 @@ module.exports = class UserServer {
         app.use(express.urlencoded({ extended: true}));
         app.use('/static', express.static('public'));
 
-        /** get ip and agent */
-        app.use((req, res, next)=>{
-            let ip = 'N/A';
-            let agent = 'N/A';
-            ip = requestIp.getClientIp(req) || ip;
-            agent = useragent.lookup(req.headers['user-agent']) || agent;
-            req.device = {ip, agent};
-            next();
-        });
-
         /** an error handler */
         app.use((err, req, res, next) => {
             console.error(err.stack)
@@ -41,8 +28,8 @@ module.exports = class UserServer {
         });
         
         /** a single middleware to handle all */
-        app.post('/api/:moduleName/:fnName', this.userApi.mw);
-        
+        app.all('/api/:moduleName/:fnName', this.userApi.mw);
+
         let server = http.createServer(app);
         server.listen(this.config.dotEnv.USER_PORT, () => {
             console.log(`${(this.config.dotEnv.SERVICE_NAME).toUpperCase()} is running on port: ${this.config.dotEnv.USER_PORT}`);

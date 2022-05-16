@@ -1,7 +1,7 @@
 {
-  "name": "darbwali-axion",
+  "name": "axion",
   "version": "1.0.0",
-  "description": "darbwali core service",
+  "description": "axion core service",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

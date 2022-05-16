@@ -17,8 +17,11 @@ const cortex = new Cortex({
     type: config.dotEnv.CORTEX_TYPE,
     state: ()=>{
         return {} 
-    }
+    },
+    activeDelay: "50ms",
+    idlDelay: "200ms",
 });
+
 
 
 const managersLoader = new ManagersLoader({config, cache, cortex});

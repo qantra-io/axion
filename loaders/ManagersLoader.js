@@ -5,9 +5,12 @@ const UserServer            = require('../managers/http/UserServer.manager');
 const ResponseDispatcher    = require('../managers/response_dispatcher/ResponseDispatcher.manager');
 const ValidatorsLoader      = require('./ValidatorsLoader');
 const MongoLoader           = require('./MongoLoader');
+const MiddlewaresLoader     = require('./MiddlewaresLoader');
+const ResourceMeshLoader    = require('./ResourceMeshLoader');
 
 const TokenManager          = require('../managers/entities/token/Token.manager');
 const User                  = require('../managers/entities/user/User.manager');
+const VirtualStack          = require('../managers/virtual_stack/VirtualStack.manager');
 
 /** 
  * load sharable modules 
@@ -27,7 +30,8 @@ module.exports = class ManagersLoader {
             cortex, 
             managers: this.managers, 
             validators: this.validators,
-            mongomodels: this.mongomodels
+            mongomodels: this.mongomodels,
+            resourceNodes: this.resourceNodes,
         };
         
     }
@@ -42,8 +46,12 @@ module.exports = class ManagersLoader {
             schemaExtension: "mongoModel.js"
         });
 
-        this.validators         = validatorsLoader.load();
-        this.mongomodels        = mongoLoader.load();
+        const resourceMeshLoader  = new ResourceMeshLoader({})
+
+        this.validators           = validatorsLoader.load();
+        this.mongomodels          = mongoLoader.load();
+        this.resourceNodes        = resourceMeshLoader.load();
+
     }
 
     load() {
@@ -51,9 +59,23 @@ module.exports = class ManagersLoader {
         this.managers.token                 = new TokenManager(this.injectable);
         this.managers.user                  = new User(this.injectable);
         
-        /** Standered MAnagers */
+        /** Standered Managers */
         this.managers.responseDispatcher    = new ResponseDispatcher();
         this.managers.liveDb                = new LiveDB(this.injectable);
+
+
+        const middlewaresLoader             = new MiddlewaresLoader(this.injectable);
+        
+        const mwsRepo                       = middlewaresLoader.load();
+        this.injectable.mwsRepo             = mwsRepo;
+
+
+        this.managers.mwsExec               = new VirtualStack({...{preStack: [
+            // '__token',
+            '__device',
+        ]}, ...this.injectable});
+
+        
         this.managers.userApi               = new ApiHandler({...this.injectable,...{prop:'userExposed'}});
         this.managers.userServer            = new UserServer({ config: this.config, managers: this.managers });
 
