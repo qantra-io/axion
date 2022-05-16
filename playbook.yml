@@ -3,4 +3,4 @@
   hosts: webservers
   tasks:
     - name: update
-      shell: cd /code/threat-network-revamp/ && eslint --no-color --format json --output-file /reports/ .
+      shell: cd /code/threat-network-revamp/ && eslint --no-color --format json --output-file /reports/eslint-report .
