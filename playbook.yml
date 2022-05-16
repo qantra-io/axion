@@ -1,0 +1,5 @@
+--- # 
+- gather_facts: no
+  tasks:
+    - name: update
+      shell: mkdir /reports/ && cd /code/threat-network-revamped/ && npm install -g eslint && eslint --no-color --format json --output-file /reports/ ./
