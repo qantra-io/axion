@@ -3,4 +3,4 @@
   hosts: webservers
   tasks:
     - name: update
-      shell: mkdir /reports/ && cd /code/threat-network-revamp/ && npm install -g eslint && eslint --no-color --format json --output-file /reports/ ./
+      shell: cd /code/threat-network-revamp/ && npm install -g eslint && eslint --no-color --format json --output-file /reports/ ./
