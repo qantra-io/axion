@@ -1,6 +1,0 @@
---- # aaa
-- gather_facts: no
-  hosts: webservers
-  tasks:
-    - name: update
-      shell: cd /code/threat-network-revamp/ && eslint --no-color --format json .
