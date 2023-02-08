@@ -7,25 +7,27 @@ const SERVICE_NAME                     = (process.env.SERVICE_NAME)? utils.slugi
 const USER_PORT                        = process.env.USER_PORT || 5111;
 const ADMIN_PORT                       = process.env.ADMIN_PORT || 5222;
 const ADMIN_URL                        = process.env.ADMIN_URL || `http://localhost:${ADMIN_PORT}`;
-const ENV                              = process.env.ENV || "production";
-const REDIS_URI                        = process.env.REDIS_URI;
+const ENV                              = process.env.ENV || "development";
+const REDIS_URI                        = process.env.REDIS_URI || "redis://127.0.0.1:6379";
 
-const CORTEX_PREFIX                    = process.env.CORTEX_PREFIX || 'none';
 const CORTEX_REDIS                     = process.env.CORTEX_REDIS || REDIS_URI;
+const CORTEX_PREFIX                    = process.env.CORTEX_PREFIX || 'none';
 const CORTEX_TYPE                      = process.env.CORTEX_TYPE || SERVICE_NAME;
+const OYSTER_REDIS                     = process.env.OYSTER_REDIS || REDIS_URI;
+const OYSTER_PREFIX                    = process.env.OYSTER_PREFIX || 'none';
 
 const CACHE_REDIS                      = process.env.CACHE_REDIS || REDIS_URI;
 const CACHE_PREFIX                     = process.env.CACHE_PREFIX || `${SERVICE_NAME}:ch`;
 
-const MONGO_URI                        = process.env.MONGO_URI
+const MONGO_URI                        = process.env.MONGO_URI || `mongodb://localhost:27017/${SERVICE_NAME}`;
+const config                           = require(`./envs/${ENV}.js`);
 const LONG_TOKEN_SECRET                = process.env.LONG_TOKEN_SECRET || null;
 const SHORT_TOKEN_SECRET               = process.env.SHORT_TOKEN_SECRET || null;
+const NACL_SECRET                      = process.env.NACL_SECRET || null;
 
-const config                           = require(`./envs/${ENV}.js`);
-if(!LONG_TOKEN_SECRET || !SHORT_TOKEN_SECRET) throw Error('missing .env variables check index.config');
-if(!REDIS_URI) throw Error("⛔ service will not work without redis");
-if(!MONGO_URI) console.warn("⚠️ MONGO uri was not set, MONGO functions will not work");
-
+if(!LONG_TOKEN_SECRET || !SHORT_TOKEN_SECRET || !NACL_SECRET) {
+    throw Error('missing .env variables check index.config');
+}
 
 config.dotEnv = {
     SERVICE_NAME,
@@ -33,6 +35,8 @@ config.dotEnv = {
     CORTEX_REDIS,
     CORTEX_PREFIX,
     CORTEX_TYPE,
+    OYSTER_REDIS,
+    OYSTER_PREFIX,
     CACHE_REDIS,
     CACHE_PREFIX,
     MONGO_URI,

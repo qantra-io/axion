@@ -1,18 +1,18 @@
 const slugify = (text)=>{
-    const from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;"
-    const to = "aaaaaeeeeeiiiiooooouuuunc------"
+  const from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;"
+  const to = "aaaaaeeeeeiiiiooooouuuunc------"
 
-    const newText = text.split('').map(
-        (letter, i) => letter.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i)))
+  const newText = text.split('').map(
+    (letter, i) => letter.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i)))
 
-    return newText
-        .toString()                     // Cast to string
-        .toLowerCase()                  // Convert the string to lowercase letters
-        .trim()                         // Remove whitespace from both sides of a string
-        .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/&/g, '-y-')           // Replace & with 'and'
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-');        // Replace multiple - with single -
+  return newText
+    .toString()                     // Cast to string
+    .toLowerCase()                  // Convert the string to lowercase letters
+    .trim()                         // Remove whitespace from both sides of a string
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/&/g, '-y-')           // Replace & with 'and'
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-');        // Replace multiple - with single -
 }
 
 
@@ -74,10 +74,11 @@ const nanoTime = ()=>{
 const inverseObj = (obj)=>{
     var retobj = {};
     for(var key in obj){
-        retobj[obj[key]] = key;
+      retobj[obj[key]] = key;
     }
     return retobj;
 }
+
 
 const flattenObject =(ob, marker)=> {
     if(!marker)marker=".";
@@ -85,15 +86,15 @@ const flattenObject =(ob, marker)=> {
     for (var i in ob) {
         if (!ob.hasOwnProperty(i)) continue;
         if ((typeof ob[i]) == 'object' && ob[i] !== null) {
-        if(Array.isArray(ob[i])){
+          if(Array.isArray(ob[i])){
             toReturn[i] = ob[i];
-        } else {
+          } else {
             var flatObject = flattenObject(ob[i], marker);
             for (var x in flatObject) {
                 if (!flatObject.hasOwnProperty(x)) continue;
                 toReturn[i + marker + x] = flatObject[x];
             }
-        }
+          }
         } else {
             toReturn[i] = ob[i];
         }
@@ -118,8 +119,7 @@ const hrTime = ()=>{
 
 _regExpEscape = (s) => {
     return s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-}
-
+  }
 _wildcardToRegExp = (s) => {
     return new RegExp('^' + s.split(/\*+/).map(_regExpEscape).join('.*') + '$');
 }
@@ -135,16 +135,17 @@ const isChance = (max)=>{
 }
 
 module.exports = {
-    slugify,
-    getDeepValue,
-    setDeepValue,
-    isNormalInteg,
-    upCaseFirst,
-    nanoTime,
-    inverseObj,
-    flattenObject,
-    arrayToObj,
-    hrTime,
-    match,
-    isChance,
+  slugify,
+  getDeepValue,
+  setDeepValue,
+  isNormalInteg,
+  upCaseFirst,
+  nanoTime,
+  inverseObj,
+  flattenObject,
+  arrayToObj,
+  hrTime,
+  match,
+  isChance,
+
 }

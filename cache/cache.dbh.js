@@ -86,6 +86,34 @@ module.exports = ({ prefix, url}) => {
 
             
         },
+        hyperlog: {
+            add: async({key, items})=>{
+                let args = [key].concat(items);
+                try {
+                    await redisClient.call('PFADD', ...args);
+                } catch(err){
+                    console.log(err);
+                }
+            },
+            count: async({key})=>{
+                let count = 0;
+                try {
+                    count = await redisClient.call('PFCOUNT', key);
+                } catch(err){
+                    console.log(err);
+                }
+                return count;
+            },
+            merge: async({keys})=>{
+                let count = 0; 
+                try {
+                    count = await redisClient.call('PFMERGE', ...keys);
+                } catch(err){
+                    console.log(err);
+                }
+                return count;
+            }
+        },
         hash: {
             set: async({key, data})=>{
                 let keys = Object.keys(data);

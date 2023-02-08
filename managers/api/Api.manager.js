@@ -1,4 +1,3 @@
-
 const getParamNames = require('./_common/getParamNames');
 /** 
  * scans all managers for exposed methods 
@@ -33,7 +32,7 @@ module.exports = class ApiHandler {
             if(this.managers[mk][this.prop]){
                 // console.log('managers - mk ', this.managers[mk])
                 this.methodMatrix[mk]={};
-                console.log(`## ${mk}`);
+                // console.log(`## ${mk}`);
                 this.managers[mk][this.prop].forEach(i=>{
                     /** creating the method matrix */
                     let method = 'post';
@@ -65,6 +64,7 @@ module.exports = class ApiHandler {
                             // this is a middleware identifier 
                             // mws are executed in the same order they existed
                             /** check if middleware exists */
+                            // console.log(this.mwsRepo);
                             if(!this.mwsRepo[param]){
                                 throw Error(`Unable to find middleware ${param}`)
                             } else {
@@ -73,22 +73,34 @@ module.exports = class ApiHandler {
                         }
                     })
                     
-                    console.log(`* ${i} :`, 'args =', params);
+                    // console.log(`* ${i} :`, 'args=', params);
 
                 });
             }
         });
 
         /** expose apis through cortex */
-        this.cortex.sub('*', (d, meta, cb)=>{
+        Object.keys(this.managers).forEach(mk=>{
+            if(this.managers[mk].interceptor){
+                this.exposed[mk]=this.managers[mk];
+                // console.log(`## ${mk}`);
+                if(this.exposed[mk].cortexExposed){
+                    this.exposed[mk].cortexExposed.forEach(i=>{
+                        // console.log(`* ${i} :`,getParamNames(this.exposed[mk][i]));
+                    })
+                }
+            }
+        });
+
+        /** expose apis through cortex */
+        this.cortex.sub('*', (d, meta, cb) => {
             let [moduleName, fnName] = meta.event.split('.');
             let targetModule = this.exposed[moduleName];
-            if(!targetModule) return cb({error: `module ${moduleName} not found`});
+            if (!targetModule) return cb({ error: `module ${moduleName} not found` });
             try {
-                this._exec({data: d, meta, cb, fnName, targetModule})
-            } catch(err){
-                console.log(`error`, err);
-                cb({error: `failed to execute ${fnName}`});
+                targetModule.interceptor({ data: d, meta, cb, fnName });
+            } catch (err) {
+                cb({ error: `failed to execute ${fnName}` });
             }
         });
         
@@ -98,15 +110,13 @@ module.exports = class ApiHandler {
     async _exec({targetModule, fnName, cb, data}){
         let result = {};
         
-
             try {
                 result = await targetModule[`${fnName}`](data);
             } catch (err){
                 console.log(`error`, err);
                 result.error = `${fnName} failed to execute`;
             }
-       
-
+    
         if(cb)cb(result);
         return result;
     }
@@ -116,6 +126,7 @@ module.exports = class ApiHandler {
 
         let method        = req.method.toLowerCase();
         let moduleName    = req.params.moduleName;
+        let context       = req.params.context;
         let fnName        = req.params.fnName;
         let moduleMatrix  = this.methodMatrix[moduleName];
 
@@ -127,11 +138,11 @@ module.exports = class ApiHandler {
             return this.managers.responseDispatcher.dispatch(res, {ok: false, message: `unsupported method ${method} for ${moduleName}`});
         }
 
-        console.log(moduleMatrix[method]);
-
         if(!moduleMatrix[method].includes(fnName)){
             return this.managers.responseDispatcher.dispatch(res, {ok: false, message: `unable to find function ${fnName} with method ${method}`});
         }
+
+        // console.log(`${moduleName}.${fnName}`);
 
         let targetStack = this.mwsStack[`${moduleName}.${fnName}`];
 
@@ -151,7 +162,6 @@ module.exports = class ApiHandler {
                 // do nothing if response handeled
             } else {
                 
-            
                 if(result.errors){
                     return this.managers.responseDispatcher.dispatch(res, {ok: false, errors: result.errors});
                 } else if(result.error){

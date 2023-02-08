@@ -49,13 +49,57 @@ module.exports = {
     },
     emoji: {
         path: 'emoji',
-        type: 'string',
-        length: {min: 1, max: 10},
-        oneOf: emojis.value,
+        type: 'Array',
+        items: {
+            type: 'string',
+            length: {min: 1, max: 10},
+            oneOf: emojis.value,
+        }
     },
     price: {
         path: 'price',
         type: 'number',
-    }
-
+    },
+    avatar: {
+        path: 'avatar',
+        type: 'string',
+        length: {min: 8, max: 100},
+    },
+    text: {
+        type: 'String',
+        length: {min: 3, max:15},
+    },
+    longText: {
+        type: 'String',
+        length: {min: 3, max:250},
+    },
+    paragraph: {
+        type: 'String',
+        length: {min: 3, max:10000},
+    },
+    phone: {
+        type: 'String',
+        length: 13,
+    },
+    email: {
+        type: 'String',
+        regex: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    },
+    number: {
+        type: 'Number',
+        length: {min: 1, max:6},
+    },
+    arrayOfStrings: {
+        type: 'Array',
+        items: {
+            type: 'String',
+            length: { min: 3, max: 100}
+        }
+    },
+    obj: {
+        type: 'Object',
+    },
+    bool: {
+        type: 'Boolean',
+    },
 }

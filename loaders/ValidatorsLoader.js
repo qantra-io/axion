@@ -1,13 +1,17 @@
 const loader           = require('./_common/fileLoader');
 const Pine             = require('qantra-pineapple');
 
+/** 
+ * load any file that match the pattern of function file and require them 
+ * @return an array of the required functions
+*/
 module.exports = class ValidatorsLoader {
     constructor({models, customValidators}={}){
         this.models = models;
         this.customValidators = customValidators;
     }
-
     load(){
+
         const validators = {};
 
         /**

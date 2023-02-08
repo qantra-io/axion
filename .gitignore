@@ -92,7 +92,3 @@ sw.*
 # vscode
 .vscode/
 
-#records
-
-records/
-uploads/
