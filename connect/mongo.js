@@ -33,4 +33,61 @@ module.exports = ({uri})=>{
       process.exit(0);
     });
   });
+
+  const getModel = ({schemaDefinition, modelName}) => {
+    const schema = new mongoose.Schema(schemaDefinition);
+    return mongoose.model(modelName, schema);
+  };
+
+  return {
+    CRUD: ({schemaDefinition, modelName}) => {
+      const Model = getModel({schemaDefinition, modelName});
+      return {
+        create: async (data) => {
+          try {
+            const newEntity = new Model(data);
+            await newEntity.save();
+            console.log(`${modelName} added to the database:`, newEntity);
+            return newEntity;
+          } catch (error) {
+            console.error(`Error adding ${modelName} to the database:`, error);
+            throw error;
+          }
+        },
+
+        read: async (query = {}) => {
+          try {
+            const entities = await Model.find(query);
+            console.log(`${modelName}(s) retrieved from the database:`, entities);
+            return entities;
+          } catch (error) {
+            console.error(`Error retrieving ${modelName}(s) from the database:`, error);
+            throw error;
+          }
+        },
+
+        update: async (id, data) => {
+          try {
+            const updatedEntity = await Model.findByIdAndUpdate(id, data, { new: true });
+            console.log(`${modelName} updated in the database:`, updatedEntity);
+            return updatedEntity;
+          } catch (error) {
+            console.error(`Error updating ${modelName} in the database:`, error);
+            throw error;
+          }
+        },
+
+        delete: async (id) => {
+          try {
+            const deletedEntity = await Model.findByIdAndDelete(id);
+            console.log(`${modelName} deleted from the database:`, deletedEntity);
+            return deletedEntity;
+          } catch (error) {
+            console.error(`Error deleting ${modelName} from the database:`, error);
+            throw error;
+          }
+        },
+      };
+    },
+  };
 }

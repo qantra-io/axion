@@ -24,7 +24,7 @@ const cortex = new Cortex({
 
 
 
-const managersLoader = new ManagersLoader({config, cache, cortex});
+const managersLoader = new ManagersLoader({config, cache, cortex,mongoDB});
 const managers = managersLoader.load();
 
 managers.userServer.run();
