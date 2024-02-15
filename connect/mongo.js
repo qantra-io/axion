@@ -4,7 +4,7 @@ mongoose.Promise    = global.Promise;
 module.exports = ({uri})=>{
   //database connection
   mongoose.connect(uri, {
-    useNewUrlParser: true,
+    // useNewUrlParser: true,
     useUnifiedTopology: true,
   });
 
