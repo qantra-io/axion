@@ -1,0 +1,18 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: School Management System
+  description: School Management System APIs
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: token
+tags:
+  - name: Classroom
+  - name: School
+  - name: Student
+  - name: User
+  
+paths:

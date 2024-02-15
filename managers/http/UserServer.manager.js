@@ -2,6 +2,9 @@ const http              = require('http');
 const express           = require('express');
 const cors              = require('cors');
 const app               = express();
+const yml               = require('yamljs');
+const swaggerUi         = require('swagger-ui-express');
+const swaggerYML = yml.load('./swagger.yml');
 
 module.exports = class UserServer {
     constructor({config, managers}){
@@ -16,6 +19,7 @@ module.exports = class UserServer {
 
     /** server configs */
     run(){
+        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerYML));
         app.use(cors({origin: '*'}));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true}));
