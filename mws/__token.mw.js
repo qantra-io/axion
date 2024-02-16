@@ -6,7 +6,7 @@ module.exports = ({ meta, config, managers }) =>{
         }
         let decoded = null
         try {
-            decoded = managers.token.verifyShortToken({token: req.headers.token});
+            decoded = managers.token.verifyLongToken({token: req.headers.token});
             if(!decoded){
                 console.log('failed to decode-1')
                 return managers.responseDispatcher.dispatch(res, {ok: false, code:401, errors: 'unauthorized'});
