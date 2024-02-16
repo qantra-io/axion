@@ -10,9 +10,262 @@ components:
       in: header
       name: token
 tags:
-  - name: Classroom
-  - name: School
-  - name: Student
+  - name: Super Admin
   - name: User
-  
+  - name: School
+  - name: Classroom
+  - name: Student
+
 paths:
+  ## User & tokens APIs ##
+  /api/user/createInitialSuperAdmin:
+    post:
+      summary: Create initial super admin user
+      tags:
+        - Super Admin
+      security:
+        # - api_key: []  # Add your security definition here
+      requestBody:
+        description: 'User details for creating initial super admin'
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              example:
+                username: 'superadmin'
+                email: 'superadmin@example.com'
+                password: 'supersecretpassword'
+      responses:
+        '200':
+          description: Successful creation. Returns a long-lived token for the new super admin.
+        '400':
+          description: Bad request. Check the request payload for missing or invalid fields.
+        '401':
+          description: Unauthorized. Ensure proper security measures are in place.
+
+  /api/user/addingUser:
+    post:
+      summary: Add a user with specified access rights
+      tags:
+        - User
+      security:
+        - api_key: []  # Add your security definition here
+      requestBody:
+        description: 'User details for adding a user'
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                accessRights:
+                  type: integer
+              example:
+                username: 'john_doe'
+                email: 'john@example.com'
+                password: 'securepassword'
+                accessRights: user  # user for student, schoolAdmin for school admins
+      responses:
+        '200':
+          description: Successful creation. Returns a long-lived token for the new user.
+        '400':
+          description: Bad request. Check the request payload for missing or invalid fields.
+        '401':
+          description: Unauthorized. Ensure a valid authentication token is provided.
+        # '403':
+        #   description: Forbidden. Only super admins are authorized to create users with specific access rights.
+
+  /api/user/loginUser:
+    post:
+      summary: Login using registered user credentials
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              example:
+                email: "sherif17.ahmed@gmail.com"
+                password: "123456789"
+      responses:
+        "200":
+          description: Logged in successfully
+        "400":
+          description: Bad request
+
+  /api/user/updateUserAccessRights:
+    put:
+      summary: Update the user access right if you are a super admin
+      tags:
+        - Super Admin
+      security:
+        - api_key: []
+      requestBody:
+        description: "User access rights: user => no rights, schoolAdmin => school admin, superAdmin => super admin, default => no rights"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                accessRights:
+                  type: integer
+              example:
+                email: "sherif17.ahmed@gmail.com"
+                accessRights: "user"
+      responses:
+        "200":
+          description: Successful request
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized - Invalid token or insufficient user rights
+
+  /api/user/deleteUser:
+    delete:
+      summary: Delete a user, requires super admin role
+      tags:
+        - Super Admin
+      security:
+        - api_key: []
+      requestBody:
+        description: "Email of the user to delete"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              example:
+                email: "sherif17.ahmed@gmail.com"
+      responses:
+        "200":
+          description: Successful request
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized - Invalid token or insufficient user rights
+
+  /api/user/updateUser:
+    put:
+      summary: Update user information
+      tags:
+        - User
+      security:
+        - api_key: []
+      requestBody:
+        description: "User information to update"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                newInfo:
+                  type: object
+              example:
+                email: "sherif17.ahmed@gmail.com"
+                newInfo: { username: "NewUsername", password: "NewPassword" }
+      responses:
+        "200":
+          description: Successful request
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized - Invalid token or insufficient user rights
+
+  /api/user/getAllUsers:
+    get:
+      summary: Get all users (Super Admin Only)
+      tags:
+        - Super Admin
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties: // Define user properties here
+        "404":
+          description: No users found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No users found
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You should be a super admin to get all users
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+
+  /api/user/deleteAllUsers:
+    delete:
+      summary: Delete all users (super admin only)
+      tags:
+        - Super Admin
+      security:
+        - api_key: []  # Add your security definition here
+      responses:
+        '200':
+          description: Successful deletion. Returns a message.
+        '401':
+          description: Unauthorized. Ensure a valid super admin authentication token is provided.
+        '403':
+          description: Forbidden. Only super admins are authorized to delete all users.
+        '500':
+          description: Internal Server Error. Failed to delete all users.
+
