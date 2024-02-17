@@ -101,7 +101,7 @@ module.exports = {
     accessRights: {
         path: 'accessRights',
         type: 'String',
-        regex: /^(user|superAdmin|schoolAdmin)$/,
+        regex: /^(user|superAdmin||school:.*)$/,
     },
     name: {
         path: 'name',

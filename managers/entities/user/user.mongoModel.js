@@ -19,7 +19,7 @@ module.exports = {
         accessRights: {
             type: String,
             required: true,
-            default: "user", // user -> no admin rights, schoolAdmin -> school admin, super -> super admin
+            default: "user", // user -> no admin rights, school._id -> school admin, super -> super admin
         },
     }
 }

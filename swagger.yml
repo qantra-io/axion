@@ -78,7 +78,7 @@ paths:
                 username: 'john_doe'
                 email: 'john@example.com'
                 password: 'securepassword'
-                accessRights: user  # user for student, schoolAdmin for school admins
+                accessRights: user  # user => student,  school:${school_name} => school admin
       responses:
         '200':
           description: Successful creation. Returns a long-lived token for the new user.
@@ -122,7 +122,7 @@ paths:
       security:
         - api_key: []
       requestBody:
-        description: "User access rights: user => no rights, schoolAdmin => school admin, superAdmin => super admin, default => no rights"
+        description: "User access rights: user => no rights, school:${school_name} => school admin, superAdmin => super admin, default => no rights"
         required: true
         content:
           application/json:

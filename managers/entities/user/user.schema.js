@@ -17,10 +17,10 @@ module.exports = {
             // required: false,
         },
     ],
-    // updateUserAccessRights: [
-    //     {
-    //         model: 'accessRights',
-    //         required: true,
-    //     },
-    // ],
+    updateUserAccessRights: [
+        {
+            model: 'accessRights',
+            required: true,
+        },
+    ],
 };

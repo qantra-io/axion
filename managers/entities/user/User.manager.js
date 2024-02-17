@@ -28,6 +28,19 @@ module.exports = class User {
       "put=updateUser"
     ];
     this.crud = mongoDB.CRUD(mongomodels.user);
+    this.crud_school = mongoDB.CRUD(mongomodels.school);
+  }
+
+  async checkSchoolAccessRights(accessRights) {
+    if (accessRights.includes("school")) {
+      const school_name = accessRights.split(":")[1];
+      const schools = await this.crud_school.read({ name: school_name });
+      if (schools.length == 0) {
+        return false;
+      }
+      return true;
+
+    } else return false;
   }
 
   async createInitialSuperAdmin({ username, email, password }) {
@@ -43,9 +56,9 @@ module.exports = class User {
         username,
         email,
         passwordHash,
-        accessRights:"superAdmin",
+        accessRights: "superAdmin",
       });
-      console.log(createdUser._id,createdUser.accessRights)
+      console.log(createdUser._id, createdUser.accessRights);
       let longToken = this.tokenManager.genLongToken({
         userId: createdUser._id,
         userKey: createdUser.accessRights,
@@ -83,11 +96,10 @@ module.exports = class User {
         statusCode: 401,
       };
     }
-    console.log(accessRights)
-    if (accessRights != 'user' && accessRights != 'schoolAdmin' ) {
+    if (accessRights != "user" && this.checkSchoolAccessRights(accessRights)) {
       return {
         error:
-          "Undefined Role for this user, please choose schoolAdmin for adding school admin or user for adding student",
+          'Undefined Role for this user, please choose school:${school_name} => school admin for adding school admin or user for adding student',
         statusCode: 401,
       };
     }
@@ -105,13 +117,13 @@ module.exports = class User {
         username,
         email,
         passwordHash,
-        accessRights:accessRights,
+        accessRights: accessRights,
       });
       let longToken = this.tokenManager.genLongToken({
         userId: createdUser._id,
         userKey: createdUser.accessRights,
       });
-      return {longToken};
+      return { longToken };
     } catch (error) {
       if (error.code === 11000) {
         // Duplicate key error, handle it
@@ -164,6 +176,10 @@ module.exports = class User {
         statusCode: 401,
       };
     }
+    let result = await this.validators.user.updateUserAccessRights({
+      accessRights,
+    });
+    if (result) return { error: result[0].message, statusCode: 400 };
 
     const oldUsers = await this.crud.read({ email });
 
@@ -172,14 +188,27 @@ module.exports = class User {
     }
 
     const oldUser = oldUsers[0];
+    let res_accessRights = accessRights.split(":")[0];
+
+    if (accessRights.includes("school")) {
+      const school_name = accessRights.split(":")[1];
+      const schools = await this.crud_school.read({ name: school_name });
+      if (schools.length == 0) {
+        return { error: `School ${school_name} not found`, statusCode: 400 };
+      }
+
+      const school_id = schools[0]._id;
+      accessRights = school_id;
+    }
+
     const newUser = await this.crud.update(oldUser._id, { accessRights });
 
-    return { email: newUser.email, accessRights: newUser.accessRights };
+    return { email: newUser.email, accessRights: res_accessRights };
   }
 
   async deleteUser({ email, __token }) {
     const decoded = __token;
-    console.log(decoded.userKey)
+    console.log(decoded.userKey);
     if (decoded.userKey !== "superAdmin") {
       return {
         error: "You should be a super admin to delete a user",
@@ -245,8 +274,8 @@ module.exports = class User {
       return { error: "Internal Server Error", statusCode: 500 };
     }
   }
- 
-async deleteAllUsers({ __token }) {
+
+  async deleteAllUsers({ __token }) {
     const decoded = __token;
 
     // Check if the user has super admin privileges
@@ -256,19 +285,18 @@ async deleteAllUsers({ __token }) {
         statusCode: 401,
       };
     }
-  
+
     try {
       const allUsers = await this.crud.read();
       if (allUsers.length === 0) {
         return { message: "No users found.", statusCode: 200 };
       }
-  
-      await Promise.all(allUsers.map(user => this.crud.delete(user._id)));
+
+      await Promise.all(allUsers.map((user) => this.crud.delete(user._id)));
       return { message: "All users deleted successfully.", statusCode: 200 };
     } catch (error) {
       console.error("Error deleting all users:", error);
       return { error: "Failed to delete all users.", statusCode: 500 };
     }
   }
-  
 };
