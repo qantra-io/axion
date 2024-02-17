@@ -5,9 +5,11 @@ module.exports = {
             required: true,
         },
         {
-            model: 'location',
+            model: 'address',
             required: true,
         },
+        {
+            model: 'eduLevel',
+        },
     ],
-    // Add other validation schemas for School entity
-};
+}
