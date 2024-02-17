@@ -269,3 +269,89 @@ paths:
         '500':
           description: Internal Server Error. Failed to delete all users.
 
+
+  ## School APIs ##
+  /api/school/createSchool:
+      post:
+        summary: Create a new school, you need to be a super admin to do that 
+        tags:
+          - School
+        security:
+          - api_key: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  address:
+                    type: string
+                  level:
+                    type: string
+                example:
+                  name: Modern Future
+                  address: Cairo, Egypt
+                  level: preparatory
+        responses:
+          '200':
+            description: Created successfully
+          '400':
+            description: Bad request
+  
+  /api/school/getAllSchools:
+    get:
+      summary: Get all users (Super Admin Only)
+      tags:
+        - School
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: Successful request
+        "404":
+          description: No schools found
+        "401":
+          description: Unauthorized,You should be a super admin to get all schools
+        "500":
+          description: Internal Server Error
+
+  /api/school/updateSchool:
+    put:
+      summary: Update school information
+      tags:
+        - School
+      security:
+        - api_key: []
+      requestBody:
+        description: "School information to update"
+        required: true
+        content:
+          application/json:
+              example:
+                id: "schoolId123"
+                name: "Updated School Name"
+                address: "Updated School Address"
+                level: "Updated School Level"
+      responses:
+        "200":
+          description: Successful request
+        "401":
+          description: Unauthorized - Only super admin can update schools
+        "400":
+          description: Bad request
+
+  /api/school/deleteAllSchools:
+    delete:
+      summary: Delete all schools
+      tags:
+        - School
+      security:
+        - api_key: []
+      responses:
+        "200":
+          description: Successful request
+        "401":
+          description: Unauthorized - Only super admin can delete schools
