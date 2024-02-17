@@ -1,17 +1,20 @@
 module.exports = {
-    createClassroom: [
+    create: [
         {
-            model: 'name',
+            model: 'label',
             required: true,
         },
         {
-            model: 'capacity',
-            required: true,
-        },
-        {
-            model: 'schoolId',
+            model: 'mongoId',
+            label: 'school Id',
             required: true,
         },
     ],
-    // Add other validation schemas for Classroom entity
-};
+    schoolId: [
+        {
+            model: 'mongoId',
+            label: 'school Id',
+            required: true,
+        },
+    ],
+}

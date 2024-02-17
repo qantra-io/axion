@@ -118,4 +118,9 @@ module.exports = {
         type: 'string',
         length: {min: 5, max: 50},
     },
+    mongoId: {
+        path: 'mongoId',
+        type: 'string',
+        regex: /^[0-9a-fA-F]{24}$/
+    },
 }

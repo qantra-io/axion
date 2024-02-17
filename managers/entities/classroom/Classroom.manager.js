@@ -1,27 +1,64 @@
-module.exports = class ClassroomManager {
+module.exports = class Classroom { 
 
-    constructor({ utils, cache, config, cortex, managers, validators, mongomodels } = {}) {
-        this.config = config;
-        this.cortex = cortex;
-        this.validators = validators;
-        this.mongomodels = mongomodels;
-        this.classroomsCollection = "classrooms";
-        // Add any other necessary configurations or dependencies
+  constructor({utils, cache, config, cortex, managers, validators, mongomodels, mongoDB }={}){
+      this.config              = config;
+      this.cortex              = cortex;
+      this.validators          = validators; 
+      this.tokenManager        = managers.token;
+      this.httpExposed         = ['createClassroom', 'get=getAllClssrooms', 'delete=deleteClassroom'];
+      this.crud                = mongoDB.CRUD(mongomodels.classroom);
+      this.crud_school         = mongoDB.CRUD(mongomodels.school);
+  }
+
+  async createClassroom({label, __token, __school}){
+      
+      const schoolId   = __school.schoolId;
+      const schoolName = __school.schoolName;
+      try {
+        const newClass = await this.crud.create({ label, school: schoolId });
+        return {
+            label: newClass.label,
+            school: schoolName,
+        };
+    } catch (error) {
+        console.error('Error creating classroom:', error);
+        return {
+            error: 'Failed to create classroom.',
+        };
     }
+  }
 
-    async createClassroom({ name, capacity, schoolId }) {
-        const classroom = { name, capacity, school: schoolId };
+  async getAllClssrooms({__token, __school}){
+      const schoolId   = __school.schoolId;
+      const schoolName = __school.schoolName;
 
-        // Data validation
-        let result = await this.validators.classroom.createClassroom(classroom);
-        if (result) return result;
+      const classrooms = await this.crud.read({school: schoolId});
+      const classroomsRes = classrooms.map(_ => _.label);
+      
+      return {
+          school: schoolName,
+          classrooms: classroomsRes,
+      };
+  }
 
-        // Creation Logic
-        let createdClassroom = await this.mongomodels.Classroom.create(classroom);
+  async deleteClassroom({label, __token, __school}){
+      const schoolName = __school.schoolName;
+      const classrooms = await this.crud.read({label});
 
-        // Response
-        return { classroom: createdClassroom };
+      if(classrooms.length == 0){
+          return {error: `classroom not found in school ${schoolName}`, statusCode: 400};
+      }
+      try {
+        await this.crud.delete(classrooms[0]._id);
+        return {
+            message: `Deleted classroom with the label ${label} in school ${schoolName}`,
+        };
+    } catch (error) {
+        console.error('Error deleting classroom:', error);
+        return {
+            error: 'Failed to delete classroom.',
+        };
     }
+  }
 
-    // Add other CRUD methods for Classroom entity
-};
+}
