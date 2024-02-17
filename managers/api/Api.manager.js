@@ -114,7 +114,8 @@ module.exports = class ApiHandler {
                 result = await targetModule[`${fnName}`](data);
             } catch (err){
                 console.log(`error`, err);
-                result.error = `${fnName} failed to execute`;
+                result.error = `${fnName} failed to execute; ${err.message}`;
+                result.statusCode = 400;
             }
     
         if(cb)cb(result);

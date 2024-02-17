@@ -1,6 +1,8 @@
 const mongoose      = require('mongoose');
 mongoose.Promise    = global.Promise;
 
+const models = {};
+
 module.exports = ({uri})=>{
   //database connection
   mongoose.connect(uri, {
@@ -34,14 +36,22 @@ module.exports = ({uri})=>{
     });
   });
 
-  const getModel = ({schemaDefinition, modelName}) => {
-    const schema = new mongoose.Schema(schemaDefinition);
-    return mongoose.model(modelName, schema);
+  const getModel = ({schemaDefinition, modelName, indecies}) => {
+    if(!models[modelName]){
+      const schema = new mongoose.Schema(schemaDefinition);
+      for(index of indecies){
+        schema.index(...index);
+      }
+      models[modelName] = mongoose.model(modelName, schema);
+    }
+
+    return models[modelName];
   };
 
   return {
-    CRUD: ({schemaDefinition, modelName}) => {
-      const Model = getModel({schemaDefinition, modelName});
+    CRUD: ({schemaDefinition, modelName,indecies}) => {
+      indecies = indecies || [];
+      const Model = getModel({schemaDefinition, modelName,indecies});
       return {
         create: async (data) => {
           try {
