@@ -103,4 +103,19 @@ module.exports = {
         type: 'String',
         regex: /^(user|superAdmin|schoolAdmin)$/,
     },
+    name: {
+        path: 'name',
+        type: 'string',
+        length: {min: 3, max: 300},
+    },
+    address: {
+        path: 'address',
+        type: 'string',
+        length: {min: 5, max: 300},
+    },
+    eduLevel: {
+        path: 'eduLevel',
+        type: 'string',
+        length: {min: 5, max: 50},
+    },
 }
