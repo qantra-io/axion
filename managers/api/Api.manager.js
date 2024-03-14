@@ -129,7 +129,7 @@ module.exports = class ApiHandler {
         let context       = req.params.context;
         let fnName        = req.params.fnName;
         let moduleMatrix  = this.methodMatrix[moduleName];
-
+        console.log(this.methodMatrix)
         /** validate module */
         if(!moduleMatrix) return this.managers.responseDispatcher.dispatch(res, {ok: false, message: `module ${moduleName} not found`});
         
