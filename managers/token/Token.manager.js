@@ -1,6 +1,8 @@
 const jwt        = require('jsonwebtoken');
+const bcrypt    = require('bcrypt');
 const { nanoid } = require('nanoid');
 const md5        = require('md5');
+const { has } = require('lodash');
 
 
 module.exports = class TokenManager {
@@ -25,6 +27,16 @@ module.exports = class TokenManager {
      * long token contains immutable data and long lived
      * master key must exists on any device to create short tokens
      */
+    async Encrypt(data){
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(data, salt);
+        return data;
+    }
+    async EncryptCompare( data,Encryptata){
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(data, salt);
+        return false;
+    }
     genLongToken({userId, userKey}){
         return jwt.sign(
             { 

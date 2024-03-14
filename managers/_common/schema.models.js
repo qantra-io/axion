@@ -102,4 +102,130 @@ module.exports = {
     bool: {
         type: 'Boolean',
     },
+    schoolName: {
+        path: "schoolName",
+        type: "string",
+        length: { min: 3, max: 100 },
+    },
+    address: {
+        path: 'address',
+        type: 'string',
+        length: {min: 5, max: 200},
+    },
+    city: {
+        path: 'city',
+        type: 'string',
+        length: {min: 5, max: 200},
+    },
+    phoneNumber: {
+        path: 'phoneNumber',
+        type: 'string',
+        length: 12,
+    },
+    principal: {
+        path: 'principal',
+        type: 'string',
+        length: {min: 5, max: 50},
+    },
+    studentCount: {
+        path: 'studentCount',
+        type: 'number',
+    },
+    teachers: {
+        path: 'teachers',
+        type: 'Array',
+        items: {
+            type: 'Object',
+            properties: {
+                name: {
+                    type: 'string',
+                    length: {min: 3, max: 50},
+                },
+                subject: {
+                    type: 'string',
+                    length: {min: 3, max: 50},
+                },
+            },
+        },
+    },
+    classes: {
+        path: 'classes',
+        type: 'Array',
+        items: {
+            type: 'Object',
+            properties: {
+                className: {
+                    type: 'string',
+                    length: {min: 3, max: 50},
+                },
+                classCode: {
+                    type: 'string',
+                    length: {min: 3, max: 20},
+                },
+                students: {
+                    type: 'Array',
+                    items: {
+                        type: 'Object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                                length: {min: 3, max: 50},
+                            },
+                            age: {
+                                type: 'number',
+                            },
+                            grade: {
+                                type: 'string',
+                                length: {min: 1, max: 2},
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    facilities: {
+        path: 'facilities',
+        type: 'Array',
+        items: {
+            type: 'string',
+            length: { min: 3, max: 50}
+        }
+    },
+    isOpen: {
+        path: 'isOpen',
+        type: 'boolean',
+    },
+    students: {
+        path: 'students',
+        type: 'Array',
+        items: {
+            type: 'Object',
+            properties: {
+                name: {
+                    type: 'string',
+                    length: {min: 3, max: 50},
+                },
+                age: {
+                    type: 'number',
+                },
+                grade: {
+                    type: 'string',
+                    length: {min: 1, max: 2},
+                },
+                address: {
+                    type: 'string',
+                    length: {min: 5, max: 200},
+                },
+                phoneNumber: {
+                    type: 'string',
+                    length: 12,
+                },
+                email: {
+                    type: 'string',
+                    regex: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                },
+            },
+        },
+    },
 }

@@ -2,7 +2,7 @@ const http              = require('http');
 const express           = require('express');
 const cors              = require('cors');
 const app               = express();
-
+const session           = require('express-session');
 module.exports = class UserServer {
     constructor({config, managers}){
         this.config        = config;
@@ -26,7 +26,11 @@ module.exports = class UserServer {
             console.error(err.stack)
             res.status(500).send('Something broke!')
         });
-        
+        app.use(session({
+            secret: 'mysecretkey@123',
+            resave: false,
+            saveUninitialized: false,
+          }));
         /** a single middleware to handle all */
         app.all('/api/:moduleName/:fnName', this.userApi.mw);
 
